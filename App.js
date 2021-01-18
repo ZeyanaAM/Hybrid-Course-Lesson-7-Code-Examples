@@ -1,11 +1,10 @@
 import { StatusBar } from 'expo-status-bar';
-import React from 'react';
+import React, { useEffect, useState, useLayoutEffect } from 'react';
 import { StyleSheet, Text, View, Button, Image } from 'react-native';
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { useEffect } from 'react';
-import { useState } from 'react';
-import { useLayoutEffect } from 'react';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createDrawerNavigator } from '@react-navigation/drawer';
 
 const Home = ({ navigation }) => {
   const [counter, setCounter] = useState(0);
@@ -83,49 +82,69 @@ const Article = ({ navigation, route }) => {
 
 const logoImage = require('./assets/favicon.png');
 
-const CustomHeader = () => {
-  return (
-    <View style={styles.customHeader}>
-      <Image source={logoImage} style={styles.logo} />
-      <Text>Header</Text>
-    </View>
-  );
-};
+const CustomHeader = () => (
+  <View style={styles.customHeader}>
+    <Image source={logoImage} style={styles.logo} />
+    <Text>Header</Text>
+  </View>
+);
 
 const Stack = createStackNavigator();
 // console.log('stack: ', Stack);
 
+const StackExample = () => (
+  <Stack.Navigator
+    initialRouteName="Home"
+    screenOptions={{
+      headerStyle: { backgroundColor: 'orange' },
+    }}
+  >
+    <Stack.Screen
+      name="Home"
+      component={Home}
+      options={{
+        title: 'First Screen',
+        // headerStyle: styles.header,
+        headerRight: () => (
+          <Button
+            title="Press me"
+            onPress={() => console.log('Button was pressed')}
+          />
+        ),
+        // headerTitle: <CustomHeader />,
+      }}
+    />
+    <Stack.Screen
+      name="Article"
+      component={Article}
+      initialParams={{ body: 'An empty body', title: 'Default Title' }}
+      options={({ route, navigation }) => ({ title: route.params.title })}
+    />
+  </Stack.Navigator>
+);
+
+const Tab = createBottomTabNavigator();
+
+const TabExample = () => (
+  <Tab.Navigator>
+    <Tab.Screen name="Home" component={Home} />
+    <Tab.Screen name="Home 2" component={Home} />
+  </Tab.Navigator>
+);
+
+const Drawer = createDrawerNavigator();
+
+const DrawerExample = () => (
+  <Drawer.Navigator>
+    <Drawer.Screen name="Home" component={Home} />
+    <Drawer.Screen name="Home 2" component={Home} />
+  </Drawer.Navigator>
+);
+
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator
-        initialRouteName="Home"
-        screenOptions={{
-          headerStyle: { backgroundColor: 'orange' },
-        }}
-      >
-        <Stack.Screen
-          name="Home"
-          component={Home}
-          options={{
-            title: 'First Screen',
-            // headerStyle: styles.header,
-            headerRight: () => (
-              <Button
-                title="Press me"
-                onPress={() => console.log('Button was pressed')}
-              />
-            ),
-            // headerTitle: <CustomHeader />,
-          }}
-        />
-        <Stack.Screen
-          name="Article"
-          component={Article}
-          initialParams={{ body: 'An empty body', title: 'Default Title' }}
-          options={({ route, navigation }) => ({ title: route.params.title })}
-        />
-      </Stack.Navigator>
+      <StackExample />
     </NavigationContainer>
   );
 }
